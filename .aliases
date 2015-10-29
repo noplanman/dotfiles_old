@@ -6,11 +6,15 @@ alias .....="cd ../../../.."
 alias -- -="cd -"
 
 # Shortcuts
+alias d="cd ~/Documents"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
-alias p="cd ~/projects"
+alias p="cd $PROJECTS"
 alias g="git"
 alias h="history"
+
+# Force remove
+alias rmf="command rm -r $@"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
@@ -44,7 +48,9 @@ alias sudo='sudo '
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ipconfig getifaddr en0"
+alias iplocal="ipconfig getifaddr $1"
+alias iplan="ipconfig getifaddr en0"
+alias ipwlan="ipconfig getifaddr en1"
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
 
 # Flush Directory Service cache

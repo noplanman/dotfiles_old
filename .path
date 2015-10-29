@@ -1,0 +1,4 @@
+export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting.
+export PATH="$PATH:$PROJECTS/_PrettyCode/PHP_CodeSniffer/scripts" # PHP CodeSniffers.
+export PATH="$PATH:/opt/local/bin:/opt/local/sbin" # Add locations for MacPorts.

@@ -105,3 +105,46 @@ function o() {
 		open "$@";
 	fi;
 }
+
+# Clone a simple chassis to the passed project folder.
+function load_chassis() {
+
+  # Remember the current directory to switch back to it when we're done.
+  pwd=`pwd`;
+  projectdir="$pwd"
+  # Process parameter.
+  if [[ ! -z "$1" ]]; then
+    projectdir="$pwd/$1"
+  fi
+
+  echo "Project folder used: $projectdir"
+
+  # Create the project directory and change into it.
+  mkdir -p "$projectdir"
+  cd "$projectdir"
+
+  proceed=true
+
+  # If the projectdir isn't empty, pop the question.
+  filelist=`ls -A`
+  if [[ ! -z "$filelist" ]]; then
+    # Ask the question - use /dev/tty in case stdin is redirected from somewhere else.
+    read -p "Project folder isn't empty! Delete everything in it and setup Chassis? [y/N] " REPLY < /dev/tty
+
+    case "$REPLY" in
+      Y*|y*) rm -rf "$filelist" ;;
+      #find . -exec rm -r {} \; ;; # Delete all files in the project folder.
+      *) proceed=false ;;
+    esac
+  fi
+
+  if $proceed; then
+    echo "Cloning Chassis..."
+    git clone --depth=1 --recursive https://github.com/Chassis/Chassis.git .
+    git clone --depth=1 --recursive https://github.com/Chassis/phpMyAdmin.git extensions/phpmyadmin
+  else
+    echo "Cancelled."
+  fi
+
+  cd "$pwd"
+}

@@ -13,3 +13,10 @@ export LESS_TERMCAP_md="${yellow}";
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';
+
+# Easier access to projects directory.
+export PROJECTS="$HOME/Documents/Projects";
+
+# WP PHPUnit testing.
+export WP_TESTS_DIR="$PROJECTS/WordPress/wordpress-tests-lib/";
+export WP_CORE_DIR="$PROJECTS/WordPress/wordpress/";
