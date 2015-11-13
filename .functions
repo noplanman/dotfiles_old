@@ -1,3 +1,48 @@
+function phpswitch() {
+  local vers=
+  local verpaths=
+  local i=0
+
+  # First of all we need to find out what versions we have installed.
+  while read -r verpath; do
+
+    if [[ $verpath = "php5-"* ]]; then
+      # Get the PHP info from the path.
+      # Prefix - PHP Version - Date - Time
+      local parts=(${verpath//-/ })
+
+      # Get the PHP version in the format XY and add it to the list.
+      local ver=${parts[1]//./}
+      ver=${ver:0:2}
+      vers[$i]="$ver"
+      verpaths[$i]="$verpath"
+      ((i++))
+    fi
+
+  done < <(command ls /usr/local)
+
+  # Join the versions with a space and make tab completion
+  # so we can easily see which versions are available to use.
+  local versstr=$(printf " %s" "${vers[@]}")
+  complete -o "nospace" -W "${versstr:1}" phpswitch
+
+  # If this is the initial refresh call to set up the tab completion, don't actually do anthing.
+  [[ "refresh" == $1 ]] && return 0
+
+  # Just count backwards again.
+  for (( i--; i >= 0; i-- )); do
+    if [[ $1 == ${vers[$i]} ]]; then
+      command rm /usr/local/php5
+      command ln -s /usr/local/${verpaths[$i]} /usr/local/php5
+      echo "PHP version set to: $(php <<< '<?php echo PHP_VERSION;')"
+      return 0
+    fi
+  done
+
+  # Show the available versions.
+  echo "Available versions: ${vers[@]}";
+}
+
 # Output a stripped vagrant global-status and add tab completion for vagrant box ids for custom vagrant aliases.
 function vglobal-status() {
   local reading=0
