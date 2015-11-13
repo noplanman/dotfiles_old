@@ -1,9 +1,12 @@
-# Create tab completion for vagrant box ids for custom vagrant aliases.
-function vagrantidtabcompletion() {
+# Output a stripped vagrant global-status and add tab completion for vagrant box ids for custom vagrant aliases.
+function vglobal-status() {
   local reading=false
-  local ids
-  while read -r line
-  do
+  local ids=
+
+  echo # Add some space for readability.
+
+  while read -r line; do
+
     if [[ "$line" =~ "-----" ]]; then
       # Next line has the first id.
       reading=true
@@ -19,7 +22,12 @@ function vagrantidtabcompletion() {
     # Get the ID from this line and add it to the array.
     local id=(${line// / })
     ids=(${ids[@]} ${id[0]})
+
+    # Output the current line.
+    echo "$line"
   done < <(vagrant global-status)
+
+  echo # Add some space for readability.
 
   # Join the ids with a space and make autocomplete items for our custom aliases.
   ids=$(printf " %s" "${ids[@]}")
