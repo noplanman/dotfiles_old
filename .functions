@@ -1,3 +1,31 @@
+# Create tab completion for vagrant box ids for custom vagrant aliases.
+function vagrantidtabcompletion() {
+  local reading=false
+  local ids
+  while read -r line
+  do
+    if [[ "$line" =~ "-----" ]]; then
+      # Next line has the first id.
+      reading=true
+      continue
+    elif [[ -z "$line" ]]; then
+      # Looks like we've finished reading all the ids.
+      break
+    fi
+
+    # If we're not reading IDs yet, get the next line.
+    [[ $reading == false ]] && continue
+
+    # Get the ID from this line and add it to the array.
+    local id=(${line// / })
+    ids=(${ids[@]} ${id[0]})
+  done < <(vagrant global-status)
+
+  # Join the ids with a space and make autocomplete items for our custom aliases.
+  ids=$(printf " %s" "${ids[@]}")
+  complete -o "nospace" -W "${ids:1}" vstatus vup vreload vhalt vssh vdestroy vsuspend vresume
+}
+
 # Create a new directory and enter it
 function mkd() {
 	mkdir -p "$@" && cd "$_";
