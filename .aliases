@@ -14,7 +14,7 @@ alias g="git"
 alias h="history"
 
 # Force remove
-alias rmf="command rm -r $@"
+alias rmf="rm -r"
 
 # Vagrant shortcuts
 for vaction in global-status status up reload halt ssh destroy suspend resume; do
@@ -23,9 +23,9 @@ done
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"
+  colorflag="--color"
 else # OS X `ls`
-	colorflag="-G"
+  colorflag="-G"
 fi
 
 # List all files colorized in long format
@@ -44,12 +44,12 @@ export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias grep="grep --color=auto"
+alias fgrep="fgrep --color=auto"
+alias egrep="egrep --color=auto"
 
 # Enable aliases to be sudo’ed
-alias sudo='sudo '
+alias sudo="sudo "
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
@@ -76,7 +76,7 @@ alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
 
 # One of @janmoesen’s ProTip™s
 for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
-	alias "$method"="lwp-request -m '$method'"
+  alias ${method}="lwp-request -m ${method}"
 done
 
 # Make Grunt print stack traces by default
