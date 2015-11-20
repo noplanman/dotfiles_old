@@ -87,3 +87,11 @@ done
 
 # Make Grunt print stack traces by default
 command -v grunt > /dev/null && alias grunt="grunt --stack"
+
+# Enable / disable tor and the Wi-Fi SOCKS proxy.
+# Prerequesites:
+# brew install tor
+# brew install torsocks
+# ln -sfv /usr/local/opt/tor/*.plist ~/Library/LaunchAgents
+alias toron="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.tor.plist; sudo networksetup -setsocksfirewallproxystate 'Wi-Fi' on;"
+alias toroff="launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.tor.plist; sudo networksetup -setsocksfirewallproxystate 'Wi-Fi' off;"
