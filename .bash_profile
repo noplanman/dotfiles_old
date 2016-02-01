@@ -4,7 +4,7 @@ test -r /sw/bin/init.sh && . /sw/bin/init.sh # Fink
 # Load the shell dotfiles, and then some:
 # * ~/.extra is used for other settings I don’t want to commit.
 for file in ~/.{exports,path,aliases,functions,extra}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+  [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 unset file;
 
@@ -13,3 +13,6 @@ unset file;
 
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall;
+
+# Refresh list of available PHP-OSX versions and add tab completion.
+phpswitch refresh
