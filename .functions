@@ -235,7 +235,7 @@ function daily_background() {
   dest="/usr/local/share/backgrounds/daily-`date +%y%m%d`.jpg";
   if [[ ! -f "$dest" ]]; then
     # Make sure we have a working internet connection.
-    ping -q -c 1 `ip` > /dev/null || exit 1;
+    /sbin/ping -q -c 1 `dig +short myip.opendns.com @resolver1.opendns.com` > /dev/null || exit 1;
 
     pic=`curl -s http://image-a-day.herokuapp.com/image | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["imageUrl"];'`;
     /usr/local/bin/wget -q "$pic" -O "$dest";
