@@ -20,7 +20,7 @@ alias rmf="rm -r"
 alias mkdir="mkdir -p"
 
 # Vagrant shortcuts
-for vaction in status up reload halt ssh destroy suspend resume; do
+for vaction in status up reload halt ssh destroy suspend resume provision; do
   alias v${vaction}="vagrant ${vaction}"
 done
 
