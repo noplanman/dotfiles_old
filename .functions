@@ -243,3 +243,15 @@ function daily_background() {
     killall Dock;
   fi
 }
+
+# Write an image to disk
+function imgtodisk() {
+  img="$1"
+  dsk="$2"
+
+  diskutil unmountDisk $dsk
+  pv -tpreb $img | sudo dd bs=8m of=$dsk
+  diskutil eject $dsk
+
+  echo 'Done!'
+}
