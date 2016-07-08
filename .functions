@@ -233,7 +233,7 @@ function load_chassis() {
 # Get a fresh background every day.
 function daily_background() {
   dest="/usr/local/share/backgrounds/daily-`date +%y%m%d`.jpg";
-  pic="https://source.unsplash.com/daily";
+  pic="https://source.unsplash.com/category/nature/daily";
   if [[ ! -f "$dest" || ! -s "$dest" || "$1" == "-f" ]]; then
     # Make sure we have a working internet connection.
     /sbin/ping -q -c 1 `dig +short myip.opendns.com @resolver1.opendns.com` > /dev/null || exit 1;
