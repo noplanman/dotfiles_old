@@ -47,7 +47,7 @@ function phpswitch() {
 function vglobal-status() {
   local reading=0
   local status=
-  local ids=
+  vagrant_machine_ids=
 
   case "$1" in
     # Prune the vagrant boxes global status cache if requested.
@@ -72,7 +72,7 @@ function vglobal-status() {
 
     # Get the id from this line and add it to the array.
     local id=(${line// / })
-    ids=(${ids[@]} ${id[0]})
+    vagrant_machine_ids=(${vagrant_machine_ids[@]} ${id[0]})
 
     # Output the current line.
     [[ -z $status || $line = *" $status "* ]] && echo "$line"
@@ -80,9 +80,46 @@ function vglobal-status() {
   done < <(vagrant global-status)
 
   # Join the ids with a space and make tab completions for our custom aliases.
-  ids=$(printf " %s" "${ids[@]}")
-  complete -o "nospace" -W "${ids:1}" vstatus vup vreload vhalt vssh vdestroy vsuspend vresume
+  vagrant_machine_ids=$(printf " %s" "${vagrant_machine_ids[@]}")
+
+  # Auto complete commands.
+  complete -o "nospace" -W "${vagrant_machine_ids:1}" vdestroy vhalt vprovision vreload vresume vssh vssh-config vstatus vsuspend vup
+
+  complete -o "nospace" -W "box connect destroy global-status halt help init login package plugin port powershell provision push rdp reload resume share snapshot ssh ssh-config status suspend up version" vagrant
   complete -o "nospace" -W "aborted poweroff running suspended prune" vglobal-status
+
+  # source: http://stackoverflow.com/a/5303225
+  _vbox_complete()
+  {
+    COMPREPLY=()
+
+    if [ $COMP_CWORD -eq 1 ]; then
+      COMPREPLY=( $(compgen -W "add list outdated remove repackage update" -- $2) )
+    elif [ $COMP_CWORD -eq 2 ]; then
+      case "$3" in
+        outdated|update) COMPREPLY=( $(compgen -W "${vagrant_machine_ids:1}" -- $2) ) ;;
+      esac
+    fi
+
+    return 0
+  } &&
+  complete -F _vbox_complete vbox
+
+  _vsnapshot_complete()
+  {
+    COMPREPLY=()
+
+    if [ $COMP_CWORD -eq 1 ]; then
+      COMPREPLY=( $(compgen -W "delete list pop push restore save" -- $2) )
+    elif [ $COMP_CWORD -eq 2 ]; then
+      case "$3" in
+        list) COMPREPLY=( $(compgen -W "${vagrant_machine_ids:1}" -- $2) ) ;;
+      esac
+    fi
+
+    return 0
+  } &&
+  complete -F _vsnapshot_complete vsnapshot
 
   echo # Add some space for readability.
 }

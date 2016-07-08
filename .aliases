@@ -22,7 +22,7 @@ alias rmf="rm -r"
 alias mkdir="mkdir -p"
 
 # Vagrant shortcuts
-for vaction in status up reload halt ssh destroy suspend resume provision; do
+for vaction in box connect destroy halt help init login package plugin port powershell provision push rdp reload resume share snapshot ssh ssh-config status suspend up version; do
   alias v${vaction}="vagrant ${vaction}"
 done
 
