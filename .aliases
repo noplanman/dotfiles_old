@@ -10,8 +10,10 @@ alias d="cd ~/Documents"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias p="cd $PROJECTS"
+alias sd="sudo "
 alias g="git"
 alias h="history"
+alias hg="history | grep"
 alias n="nano"
 alias c="cat"
 
@@ -21,13 +23,20 @@ alias rmf="rm -r"
 # Create the directly no matter what.
 alias mkdir="mkdir -p"
 
+# Find in current folder.
+alias fhere="find . -name "
+
+# Better default for du command.
+alias du="du -ach"
+
+# Show all processes with extras by default and add an alias to easily filter the table.
+alias ps="ps aux"
+alias psg="\ps aux | grep -v grep | grep -i -e VSZ -e"
+
 # Vagrant shortcuts
 for vaction in box connect destroy halt help init login package plugin port powershell provision push rdp reload resume share snapshot ssh ssh-config status suspend up version; do
   alias v${vaction}="vagrant ${vaction}"
 done
-
-# Shortcut for Sublime Text
-alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
@@ -52,7 +61,7 @@ alias lda="ls -lAF ${colorflag} | grep --color=never '^d'"
 alias lsa="ls -AF ${colorflag}"
 
 # Always use color output for `ls`
-alias ls="command ls ${colorflag}"
+alias ls="\ls ${colorflag}"
 export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
 
 # Always enable colored `grep` output
@@ -60,9 +69,6 @@ export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 alias grep="grep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias egrep="egrep --color=auto"
-
-# Enable aliases to be sudo’ed
-alias sudo="sudo "
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
