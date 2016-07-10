@@ -249,11 +249,10 @@ function phpserver() {
 # `s` with no arguments opens the current directory in Sublime Text, otherwise
 # opens the given location
 function s() {
-  local subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
   if [ $# -eq 0 ]; then
-    subl .;
+    /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl .;
   else
-    subl "$@";
+    /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl "$@";
   fi;
 }
 
