@@ -129,6 +129,16 @@ function mkd() {
   mkdir -p "$@" && cd "$_";
 }
 
+# Create a new temporary directory and enter it
+function t() {
+  mkdir -p "/tmp/_tmp_$(rnd 8)" && cd "$_"
+}
+
+# Output a random string with the length of the first param, or 32 by default
+function rnd() {
+  echo $(LC_ALL=C; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1)
+}
+
 # Extract ANY compressed file.
 # source: https://github.com/xvoland/Extract/blob/master/extract.sh
 function extract {
