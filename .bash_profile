@@ -13,6 +13,3 @@ unset file;
 
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall;
-
-# Refresh list of available PHP-OSX versions and add tab completion.
-phpswitch refresh

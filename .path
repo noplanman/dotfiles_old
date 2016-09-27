@@ -2,4 +2,4 @@ export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.rvm/bin:$PATH" # Add RVM to PATH for scripting.
 export PATH="$PROJECTS/_PrettyCode/PHP_CodeSniffer/scripts:$PATH" # PHP CodeSniffers.
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH" # Add locations for MacPorts.
-export PATH="/usr/local/php5/bin:$PATH" # Add location for liip.ch OSX PHP versions.
+export PATH="/usr/local/bin:/usr/local/sbin:$PATH" # Add location for local binaries.

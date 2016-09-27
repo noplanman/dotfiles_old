@@ -1,3 +1,10 @@
+function phpswitch() {
+  brew unlink $(brew list | grep -E 'php[0-9]*$') > /dev/null 2>&1
+  brew link "php$1" > /dev/null 2>&1
+
+  echo "PHP version set to: $(php <<< '<?php echo PHP_VERSION;')"
+}
+
 # Output a stripped vagrant global-status and add tab completion for vagrant box ids for custom vagrant aliases.
 function vglobal-status() {
   local reading=0
@@ -281,13 +288,41 @@ function daily_background() {
 }
 
 # Write an image to disk
-function imgtodisk() {
-  img="$1"
-  dsk="$2"
+function img2disk() {
+  IMG="$1"
+  DSK="$2"
 
-  diskutil unmountDisk $dsk
-  pv -tpreb $img | sudo dd bs=8m of=$dsk
-  diskutil eject $dsk
+  if [ -z "${IMG}" ] || [ -z "${DSK}" ]; then
+    echo "Usage: img2disk <path/image>.<img|zip|xz> <path/disk>"
+  elif [ ! -f "${IMG}" ] ; then
+    echo "${IMG} - file not found"
+  elif [ ! -c "${DSK}" ] ; then
+    echo "${DSK} - disk not found"
+  else
+    diskutil unmountDisk ${DSK}
+
+    case ${IMG} in
+      *.zip)  echo "Compressed zip file"
+              SIZE=$(unzip -l "${IMG}" | tail -1 | awk '{print $1}')
+              CMD="unzip -p ${IMG}"
+              ;;
+      *.xz)   echo "Compressed unxz file"
+              SIZE=$(unxz --robot -l "${IMG}" | tail -1 | awk '{print $5}')
+              CMD="unxz -c ${IMG}"
+              ;;
+      *)      echo "Uncompressed file"
+              SIZE=$(wc -c "${IMG}" | awk '{print $1}')
+              CMD="cat ${IMG}"
+              ;;
+    esac
+    echo "File Size:    ${SIZE}"
+    echo "Command:      ${CMD}"
+    echo "Full Command: pv -tprebs ${SIZE} <(${CMD}) | sudo dd bs=8m of=${DSK}"
+
+    pv -tprebs ${SIZE} <(${CMD}) | sudo dd bs=8m of=${DSK}
+
+    diskutil eject ${DSK}
+  fi
 
   echo 'Done!'
 }
