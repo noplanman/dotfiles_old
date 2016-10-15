@@ -1,8 +1,52 @@
+# Switch the brew PHP version
 function phpswitch() {
-  brew unlink $(brew list | grep -E 'php[0-9]*$') > /dev/null 2>&1
-  brew link "php$1" > /dev/null 2>&1
+    phpvers=$(brew list | grep -E 'php\d{2}$')
+    if $(brew --prefix php$1 &>/dev/null); then
+        # Has a valid version been passed?
+        brew unlink $phpvers &> /dev/null
+        brew link "php$1" &> /dev/null
+        echo "Success!"
+    else
+        if [ ! -z "$1" ]; then
+            printf "Invalid selection! "
+        fi
+        echo "No change."
+        echo "Available versions:"
+        echo "${phpvers}"
+    fi
+    echo "Current PHP version: $(php <<< '<?php echo PHP_VERSION;')"
+}
 
-  echo "PHP version set to: $(php <<< '<?php echo PHP_VERSION;')"
+# Create symbolic links to all brew and MAMP php versions.
+function phplinkify() {
+  # Symlinks for PHP brew
+  phpdirbrew=/usr/local/php-brew
+  rm -rf ${phpdirbrew}
+  mkdir -p ${phpdirbrew}
+  echo "Linkifying brew PHP versions..."
+  for phpver in $(brew list | grep ^php\d{2}$); do
+    phpdir=$(brew --prefix ${phpver})
+    ln -sf ${phpdir} ${phpdirbrew}/${phpver}
+    ln -sf ${phpdir}/bin/php /usr/local/bin/${phpver}-brew
+    echo "- ${phpver}: ${phpdir}/bin/php -> /usr/local/bin/${phpver}-brew"
+  done
+  echo "Done!"
+  echo
+  # Symlinks for PHP MAMP
+  phpdirmamp=/usr/local/php-mamp
+  rm -rf ${phpdirmamp}
+  mkdir -p ${phpdirmamp}
+  echo "Linkifying MAMP PHP versions..."
+  # see: https://embraceubuntu.com/2005/10/19/list-only-the-directories/
+  for phpver in $(ls -d /Applications/MAMP/bin/php/*/ | xargs basename | sed 's/\.//g' | cut -b 1-5); do
+    major=${phpver:3:1}
+    minor=${phpver:4:1}
+    phpdir=/Applications/MAMP/bin/php/php${major}.${minor}*
+    ln -sf ${phpdir} ${phpdirmamp}/${phpver}
+    ln -sf ${phpdir}/bin/php /usr/local/bin/${phpver}-mamp
+    echo "- ${phpver}: ${phpdir}/bin/php -> /usr/local/bin/${phpver}-mamp"
+  done
+  echo "Done!"
 }
 
 # Output a stripped vagrant global-status and add tab completion for vagrant box ids for custom vagrant aliases.
