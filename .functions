@@ -49,7 +49,7 @@ function phplinkify() {
   echo "Done!"
 }
 
-# Output a stripped vagrant global-status and add tab completion for vagrant box ids for custom vagrant aliases.
+# Output a stripped vagrant global-status and adds tab completion for vagrant box ids for custom vagrant aliases.
 function vglobal-status() {
   local reading=0
   local status=
@@ -137,7 +137,7 @@ function mkd() {
 
 # Create a new temporary directory and enter it
 function t() {
-  mkdir -p "/tmp/_tmp_$(rnd 8)" && cd "$_"
+  mkdir -p "${HOME}/.tmp/_tmp_$(rnd 8)" && cd "$_"
 }
 
 # Output a random string with the length of the first param, or 32 by default
