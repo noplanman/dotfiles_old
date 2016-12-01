@@ -17,5 +17,10 @@ export MANPAGER="less -X";
 # Easier access to projects directory.
 export PROJECTS="$HOME/Documents/Projects";
 
+# Brew
+export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_NO_INSECURE_REDIRECT=1
+export HOMEBREW_CASK_OPTS=--require-sha
+
 # Default editor
 export EDITOR="nano"

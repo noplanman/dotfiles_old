@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+# Install command-line tools using Homebrew.
+
+# Ask for the administrator password upfront.
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until the script has finished.
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+if ! which brew > /dev/null ; then
+	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
+# Make sure we’re using the latest Homebrew.
+brew update
+
+# Upgrade any already-installed formulae.
+brew upgrade --all
+
+# Install GNU core utilities (those that come with OS X are outdated).
+# Don’t forget to add `$(brew --prefix coreutils)/libexec/gnubin` to `$PATH`.
+# brew install coreutils
+# sudo ln -s /usr/local/bin/gsha256sum /usr/local/bin/sha256sum
+
+# Install `wget` with IRI support.
+brew install wget --with-iri
+
+# Install more recent versions of some OS X tools.
+brew install vim --override-system-vi
+brew install homebrew/dupes/grep
+brew install homebrew/dupes/openssh
+brew install homebrew/dupes/screen
+brew install homebrew/php/php55 --with-gmp
+
+# Install some CTF tools; see https://github.com/ctfs/write-ups.
+# brew install aircrack-ng
+# brew install bfg
+# brew install binutils
+# brew install binwalk
+# brew install cifer
+# brew install dex2jar
+# brew install dns2tcp
+# brew install fcrackzip
+# brew install foremost
+# brew install hashpump
+# brew install hydra
+# brew install john
+# brew install knock
+# brew install netpbm
+brew install nmap
+# brew install pngcheck
+# brew install socat
+# brew install sqlmap
+# brew install tcpflow
+# brew install tcpreplay
+# brew install tcptrace
+# brew install ucspi-tcp # `tcpserver` etc.
+# brew install xpdf
+brew install xz
+
+# Install other useful binaries.
+brew install ack
+brew install ansible
+brew install bash-completion
+brew install composer
+brew install composer-completion
+brew install curl --with-openssl
+brew install docker
+brew install docker-machine
+# brew install dos2unix
+# brew install ext4fuse
+brew install git
+# brew install git-flow
+brew install git-lfs
+# brew install gnupg
+# brew install gnutls
+# brew install httrack
+brew install imagemagick --with-webp
+brew install iperf3
+brew install jq
+brew install keybase
+brew install lastpass-cli
+brew install libidn
+brew install oath-toolkit
+brew install openssl
+brew install php53 php53-xdebug
+brew install php54 php54-xdebug
+brew install php55 php55-xdebug
+brew install php56 php56-xdebug
+brew install php70 php70-xdebug
+brew install php71 php71-xdebug
+brew install phpdocumentor
+brew install phpunit
+brew install pv
+brew install pwgen
+brew install speedtest_cli
+brew install sqlite
+brew install ssh-copy-id
+brew install subversion
+brew install thefuck
+brew install tor torsocks
+brew install tree
+brew install vagrant-completion
+brew install wifi-password
+brew install wine
+brew install wp-cli
+
+# Remove outdated versions from the cellar.
+brew cleanup
