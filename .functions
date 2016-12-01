@@ -135,6 +135,27 @@ function mkd() {
   mkdir -p "$@" && cd "$_";
 }
 
+# Show the history and execute any entry by passing it's entry number
+function h() {
+  if [ -z "${1}" ]; then
+    echo "$(history)"
+    return 0
+  fi
+
+  CMD="$(history | grep -E "^\s*${1}\ .*" | awk '{print $2}')"
+
+  if [ -z "${CMD}" ]; then
+    echo "Invalid entry: ${1}"
+    return 1
+  fi
+
+  read -p "Execute '${CMD}'? (y/N): " REPLY < /dev/tty
+  case "$REPLY" in
+    Y|y) ${CMD} ;;
+    *) echo "Cancelled" ;;
+  esac
+}
+
 # Create a new temporary directory and enter it
 function t() {
   mkdir -p "${HOME}/.tmp/_tmp_$(rnd 8)" && cd "$_"
@@ -260,6 +281,11 @@ function phpserver() {
   local ip=$(ipconfig getifaddr en1);
   sleep 1 && open "http://${ip}:${port}/" &
   php -S "${ip}:${port}";
+}
+
+# Run `dig` and display the most useful info
+function digga() {
+  dig +nocmd "$1" any +multiline +noall +answer;
 }
 
 # `s` with no arguments opens the current directory in Sublime Text, otherwise
