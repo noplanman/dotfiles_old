@@ -142,7 +142,7 @@ function h() {
     return 0
   fi
 
-  CMD="$(history | grep -E "^\s*${1}\ .*" | awk '{print $2}')"
+  CMD="$(history | sed -n -E "s/^\ *${1}\ *(.*)$/\1/p")"
 
   if [ -z "${CMD}" ]; then
     echo "Invalid entry: ${1}"
