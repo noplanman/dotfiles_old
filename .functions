@@ -1,6 +1,6 @@
 # Switch the brew PHP version
 function phpswitch() {
-    phpvers=$(brew list | grep -E 'php\d{2}$')
+    phpvers=$(brew list | grep -E '^php\d{2}$')
     if $(brew --prefix php$1 &>/dev/null); then
         # Has a valid version been passed?
         brew unlink $phpvers &> /dev/null
@@ -24,7 +24,7 @@ function phplinkify() {
   rm -rf ${phpdirbrew}
   mkdir -p ${phpdirbrew}
   echo "Linkifying brew PHP versions..."
-  for phpver in $(brew list | grep ^php\d{2}$); do
+  for phpver in $(brew list | grep -E '^php\d{2}$'); do
     phpdir=$(brew --prefix ${phpver})
     ln -sf ${phpdir} ${phpdirbrew}/${phpver}
     ln -sf ${phpdir}/bin/php /usr/local/bin/${phpver}-brew
