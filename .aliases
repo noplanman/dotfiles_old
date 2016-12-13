@@ -14,9 +14,7 @@ alias sudo="sudo "
 alias g="git"
 alias hg="history | grep"
 alias n="nano"
-
-# Trim new lines and copy to clipboard
-alias c="tr -d '\n' | pbcopy"
+alias c="pbcopy"
 
 # Force remove
 alias rmf="rm -rf"
