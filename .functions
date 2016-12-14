@@ -138,7 +138,7 @@ function mkd() {
 # Show the history and execute any entry by passing it's entry number
 function h() {
   if [ -z "${1}" ]; then
-    echo "$(history)"
+    eval "history"
     return 0
   fi
 
@@ -151,7 +151,7 @@ function h() {
 
   read -p "Execute '${CMD}'? (y/N): " REPLY < /dev/tty
   case "$REPLY" in
-    Y|y) ${CMD} ;;
+    Y|y) eval "${CMD}" ;;
     *) echo "Cancelled" ;;
   esac
 }
