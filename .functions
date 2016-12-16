@@ -13,13 +13,13 @@ _otp_complete() {
 # Switch the brew PHP version
 function phpswitch() {
   local -r PHPVERS="$(brew list | grep -E '^php\d{2}$')"
-  if brew --prefix "php$1" &>/dev/null; then
+  if brew --prefix "php${1}" &>/dev/null; then
     # Has a valid version been passed?
     brew unlink "${PHPVERS}" &>/dev/null
-    brew link "php$1" &>/dev/null
+    brew link "php${1}" &>/dev/null
     echo "Success!"
   else
-    if [ ! -z "$1" ]; then
+    if [ ! -z "${1}" ]; then
       printf "Invalid selection! "
     fi
     echo "No change."
@@ -31,7 +31,7 @@ function phpswitch() {
 
 # Create symbolic links to all brew and MAMP php versions.
 function phplinkify() {
-  local -r PHPDIR=
+  local PHPDIR
 
   # Symlinks for PHP brew
   local -r PHPDIRBREW="/usr/local/php-brew"
@@ -53,9 +53,9 @@ function phplinkify() {
   mkdir -p "${PHPDIRMAMP}"
   echo "Linkifying MAMP PHP versions..."
   # see: https://embraceubuntu.com/2005/10/19/list-only-the-directories/
-  for PHPVER in $(ls -d "/Applications/MAMP/bin/php"/*/ | xargs basename | sed 's/\.//g' | cut -b 1-5); do
-    local -r MAJOR="${PHPVER:3:1}"
-    local -r MINOR="${PHPVER:4:1}"
+  for PHPVER in $(find "/Applications/MAMP/bin/php"/*/ -type d -maxdepth 0 -print0 | xargs -0 basename | sed 's/\.//g' | cut -b 1-5); do
+    local MAJOR="${PHPVER:3:1}"
+    local MINOR="${PHPVER:4:1}"
     PHPDIR="/Applications/MAMP/bin/php/php${MAJOR}.${MINOR}*"
     ln -sf "${PHPDIR}" "${PHPDIRMAMP}/${PHPVER}"
     ln -sf "${PHPDIR}/bin/php" "/usr/local/bin/${PHPVER}-mamp"
@@ -66,8 +66,8 @@ function phplinkify() {
 
 # Output a stripped vagrant global-status and adds tab completion for vagrant box ids for custom vagrant aliases.
 function vglobal-status() {
-  local -r READING=0
-  local -r STATUS=
+  local READING=0
+  local STATUS=
   VAGRANT_MACHINE_IDS=
 
   case "${1}" in
@@ -80,10 +80,10 @@ function vglobal-status() {
 
   echo # Add some space for readability.
 
-  while read -r line; do
+  while read -r LINE; do
 
     # Wait for the entries to start and stop when we reach the empty line.
-    case "${line}" in
+    case "${LINE}" in
       "-"*) READING=1; continue ;; # Next line has the first id.
       "") break ;; # Looks like we've finished reading all the ids.
     esac
@@ -92,19 +92,16 @@ function vglobal-status() {
     [ "${READING}" -eq 0 ] && continue
 
     # Get the id from this line and add it to the array.
-    local -r ID=(${line// / })
-    VAGRANT_MACHINE_IDS=(${VAGRANT_MACHINE_IDS[@]} ${ID[0]})
+    local -r ID="$(echo "${LINE}" | awk '{print $1}')"
+    VAGRANT_MACHINE_IDS="${VAGRANT_MACHINE_IDS} ${ID}"
 
     # Output the current line.
-    [[ -z "${STATUS}" || "${line}" = *" ${STATUS} "* ]] && echo "${line}"
+    [[ -z "${STATUS}" || "${LINE}" = *" ${STATUS} "* ]] && echo "${LINE}"
 
   done < <(vagrant global-status)
 
-  # Join the ids with a space and make tab completions for our custom aliases.
-  VAGRANT_MACHINE_IDS=$(printf " %s" "${VAGRANT_MACHINE_IDS[@]}")
-
   # Auto complete commands.
-  complete -o "nospace" -W "${VAGRANT_MACHINE_IDS:1}" vdestroy vhalt vprovision vreload vresume vssh vssh-config vstatus vsuspend vup
+  complete -o "nospace" -W "${VAGRANT_MACHINE_IDS}" vdestroy vhalt vprovision vreload vresume vssh vssh-config vstatus vsuspend vup
 
   complete -o "nospace" -W "box connect destroy global-status halt help init login package plugin port powershell provision push rdp reload resume share snapshot ssh ssh-config status suspend up version" vagrant
   complete -o "nospace" -W "aborted poweroff running suspended prune" vglobal-status
@@ -116,8 +113,8 @@ function vglobal-status() {
     if [ "$COMP_CWORD" -eq 1 ]; then
       COMPREPLY=($(compgen -W "add list outdated remove repackage update" -- "${2}"))
     elif [ "$COMP_CWORD" -eq 2 ]; then
-      case "$3" in
-        outdated|update) COMPREPLY=($(compgen -W "${VAGRANT_MACHINE_IDS:1}" -- "${2}")) ;;
+      case "${3}" in
+        outdated|update) COMPREPLY=($(compgen -W "${VAGRANT_MACHINE_IDS}" -- "${2}")) ;;
       esac
     fi
 
@@ -130,8 +127,8 @@ function vglobal-status() {
     if [ "$COMP_CWORD" -eq 1 ]; then
       COMPREPLY=($(compgen -W "delete list pop push restore save" -- "${2}"))
     elif [ "$COMP_CWORD" -eq 2 ]; then
-      case "$3" in
-        list) COMPREPLY=($(compgen -W "${VAGRANT_MACHINE_IDS:1}" -- "${2}")) ;;
+      case "${3}" in
+        list) COMPREPLY=($(compgen -W "${VAGRANT_MACHINE_IDS}" -- "${2}")) ;;
       esac
     fi
 
@@ -143,6 +140,11 @@ function vglobal-status() {
 
 # Create a new directory and enter it
 function mkd() {
+  if [ "$#" -eq 0 ]; then
+    echo "Usage: mkd directory [directory..]"
+    return 1
+  fi
+
   mkdir -p "$@" && cd "$_" || exit;
 }
 
@@ -160,8 +162,8 @@ function h() {
     return 1
   fi
 
-  read -p "Execute '${CMD}'? (y/N): " REPLY < /dev/tty
-  case "${REPLY}" in
+  read -r -p "Execute '${CMD}'? (Y/n): " REPLY < /dev/tty
+  case "${REPLY:-y}" in
     Y|y) eval "${CMD}" ;;
     *) echo "Cancelled" ;;
   esac
@@ -170,58 +172,58 @@ function h() {
 # Create a new temporary directory and enter it
 HOMETMP="${HOME}/.tmp"
 function t() {
-  if [ ! -z "${1}" ]; then
-    if [ -d "${HOMETMP}/${1}" ]; then
-      cd "${HOMETMP}/${1}" || exit
-    else
-      echo "Invalid tmp folder!"
-    fi
-  else
+  if [ -z "${1}" ]; then
     mkdir -p "${HOMETMP}/$(rnd 8)" && cd "$_" || exit
+    return 0
+  fi
+
+  if [ -d "${HOMETMP}/${1}" ]; then
+    cd "${HOMETMP}/${1}" || exit
+  else
+    echo "Invalid tmp folder!"
   fi
 }
 _t_complete() {
   # Insert ".*" inbetween all characters, to match in total wildcard fashion
   local -r WORD="$(echo "${2}" | sed 's/.* //;s/\(.\)/\1.*/g')"
-  COMPREPLY=($(compgen -W "$(ls -d "${HOMETMP}"/*/ | xargs basename | sed 's/\.//g' | grep -i "${WORD}")"))
+  COMPREPLY=($(compgen -W "$(find "${HOMETMP}"/* -type d -maxdepth 0 -print0 | xargs -0 basename | sed 's/\.//g' | grep -i "${WORD}")"))
 } && complete -F _t_complete t
 
 # Output a random string with the length of the first param, or 32 by default
 function rnd() {
-  echo "$(LC_ALL=C; cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w "${1:-32}" | head -n 1)"
+  echo "$(LC_ALL=C; < /dev/urandom tr -dc 'a-zA-Z0-9' | fold -w "${1:-32}" | head -n 1)"
 }
 
 # Extract ANY compressed file.
 # source: https://github.com/xvoland/Extract/blob/master/extract.sh
 function extract() {
-  if [ -z "${1}" ]; then
-    # display usage if no parameters given
-    echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+  if [ -z "${1}" ] ; then
+    echo "Usage: extract file.<7z|bz2|exe|gz|lzma|rar|tar|tar.bz2|tar.gz|tar.xz|tbz2|tgz|xz|Z|zip>"
+    return 1
+  elif [ ! -f "${1}" ]; then
+    echo "File not found: '${1}'"
+    return 1
   else
-    if [ -f "${1}" ] ; then
-      local -r NAME="${1%.*}"
-      mkdir "${NAME}" && cd "${NAME}" || exit
-      case "${1}" in
-        *.tar.bz2)   tar xvjf "../${1}"                  ;;
-        *.tar.gz)    tar xvzf "../${1}"                  ;;
-        *.tar.xz)    tar xvJf "../${1}"                  ;;
-        *.lzma)      unlzma "../${1}"                    ;;
-        *.bz2)       bunzip2 "../${1}"                   ;;
-        *.rar)       unrar x -ad "../${1}"               ;;
-        *.gz)        gunzip "../${1}"                    ;;
-        *.tar)       tar xvf "../${1}"                   ;;
-        *.tbz2)      tar xvjf "../${1}"                  ;;
-        *.tgz)       tar xvzf "../${1}"                  ;;
-        *.zip)       unzip "../${1}"                     ;;
-        *.Z)         mv "../${1}" . && uncompress "${1}" ;;
-        *.7z)        7z x "../${1}"                      ;;
-        *.xz)        unxz "../${1}"                      ;;
-        *.exe)       cabextract "../${1}"                ;;
-        *)           echo "extract: '${1}' - unknown archive method" ;;
-      esac
-    else
-      echo "${1} - file does not exist"
-    fi
+    local -r NAME="${1%.*}"
+    mkdir "${NAME}" && cd "${NAME}" || exit
+    case "${1}" in
+      *.tar.bz2) tar xvjf "../${1}"                              ;;
+      *.tar.gz)  tar xvzf "../${1}"                              ;;
+      *.tar.xz)  tar xvJf "../${1}"                              ;;
+      *.tbz2)    tar xvjf "../${1}"                              ;;
+      *.tgz)     tar xvzf "../${1}"                              ;;
+      *.tar)     tar xvf "../${1}"                               ;;
+      *.bz2)     bunzip2 "../${1}"                               ;;
+      *.gz)      gunzip "../${1}"                                ;;
+      *.rar)     unrar x -ad "../${1}"                           ;;
+      *.exe)     cabextract "../${1}"                            ;;
+      *.lzma)    unlzma "../${1}"                                ;;
+      *.7z)      7z x "../${1}"                                  ;;
+      *.xz)      unxz "../${1}"                                  ;;
+      *.Z)       mv "../${1}" . && uncompress "${1}"             ;;
+      *.zip)     unzip "../${1}"                                 ;;
+      *)         echo "extract: '${1}' - unknown archive method" ;;
+    esac
   fi
 }
 
@@ -232,9 +234,7 @@ function cdf() { # short for $(cdfinder)
 
 # Create a .tar.gz archive, using zopfli, pigz or gzip for compression
 function targz() {
-  local -r TMPFILE="${@%/}.tar"
-  echo "$TMPFILE"
-  return 0
+  local -r TMPFILE="${1}_$(date +%y%m%d).tar"
   tar -cvf "${TMPFILE}" --exclude=".DS_Store" "${@}" || return 1
 
   local -r SIZE=$(
@@ -242,16 +242,12 @@ function targz() {
     stat -c"%s" "${TMPFILE}" 2>/dev/null # GNU stat
   )
 
-  local -r CMD=
+  local CMD="gzip"
   if (( SIZE < 52428800 )) && hash zopfli 2>/dev/null; then
     # the .tar file is smaller than 50 MB and Zopfli is available, use it
     CMD="zopfli"
-  else
-    if hash pigz 2>/dev/null; then
-      CMD="pigz"
-    else
-      CMD="gzip"
-    fi
+  elif hash pigz 2>/dev/null; then
+    CMD="pigz"
   fi
 
   echo "Compressing .tar using '${CMD}'..."
@@ -272,23 +268,29 @@ function gz() {
 
 # Determine size of a file or total size of a directory
 function fs() {
-  local -r ARG="-sh"
+  local ARG="-sh"
 
-  if \du -b/dev/null >/dev/null 2>&1; then
+  if command du -b/dev/null >/dev/null 2>&1; then
     ARG="-sbh"
   fi
   if [[ -n "$@" ]]; then
-    \du "${ARG}" -- "$@"
+    command du "${ARG}" -- "$@"
   else
-    \du "${ARG}" .[^.]* *
-  fi;
+    command du "${ARG}" .[^.]* ./*
+  fi
 }
 
 # Create a data URL from a file
 function dataurl() {
-  local -r MIMETYPE="$(file -b --mime-type "${1}")"
+  if [ ! -f "${1}" ]; then
+    echo "Usage: dataurl file"
+    return 1
+  fi
 
-  if [[ "$MIMETYPE" == text/* ]]; then
+  local MIMETYPE
+  MIMETYPE="$(file -b --mime-type "${1}")"
+
+  if [[ "${MIMETYPE}" == text/* ]]; then
     MIMETYPE="${MIMETYPE};charset=utf-8"
   fi
   echo "data:${MIMETYPE};base64,$(openssl base64 -in "${1}" | tr -d '\n')"
@@ -300,7 +302,8 @@ function gitio() {
     echo "Usage: gitio slug url"
     return 1
   fi
-  curl -i "http://git.io/" -F "url=${2}" -F "code=${1}"
+
+  curl -i "https://git.io/" -F "code=${1}" -F "url=${2}"
 }
 
 # Start a PHP server from a directory, optionally specifying the port
@@ -308,12 +311,18 @@ function gitio() {
 function phpserver() {
   local -r PORT="${1:-4000}"
   local -r IP="$(ipconfig getifaddr en1)"
+
   sleep 1 && open "http://${IP}:${PORT}/" &
   php -S "${IP}:${PORT}"
 }
 
 # Run dig and display the most useful info
 function digga() {
+  if [ -z "${1}" ]; then
+    echo "Usage: digga domain"
+    return 1
+  fi
+
   dig +nocmd "${1}" any +multiline +noall +answer
 }
 
@@ -330,7 +339,12 @@ function o() {
 
 # Clone a simple chassis to the passed project folder.
 function load_chassis() {
-  local -r PROCEED=true
+  if [ -z "${1}" ]; then
+    echo "Usage: load_chassis project_folder"
+    return 1
+  fi
+
+  local PROCEED=true
 
   # Create the project directory, change into it and remember it to change back when we're done.
   mkdir -p "$1" && pushd "$_" >/dev/null
@@ -342,7 +356,7 @@ function load_chassis() {
 
   if [ -n "${FILELIST}" ]; then
     # Ask the question - use /dev/tty in case stdin is redirected from somewhere else.
-    read -p "Project folder isn't empty! Delete everything in it and setup Chassis? [y/N] " REPLY < /dev/tty
+    read -r -p "Project folder isn't empty! Delete everything in it and setup Chassis? [y/N] " REPLY < /dev/tty
 
     case "$REPLY" in
       Y|y) rm -rf "${FILELIST}" ;;
