@@ -157,9 +157,23 @@ function h() {
 }
 
 # Create a new temporary directory and enter it
+HOMETMP="${HOME}/.tmp"
 function t() {
-  mkdir -p "${HOME}/.tmp/_tmp_$(rnd 8)" && cd "$_"
+  if [ ! -z "${1}" ]; then
+    if [ -d "${HOMETMP}/${1}" ]; then
+      cd "${HOMETMP}/${1}"
+    else
+      echo "Invalid tmp folder!"
+    fi
+  else
+    mkdir -p "${HOMETMP}/$(rnd 8)" && cd "$_"
+  fi
 }
+_t_complete() {
+  # Insert ".*" inbetween all characters, to match in total wildcard fashion
+  local word="$(echo ${COMP_WORDS[COMP_CWORD]} | sed 's/.* //;s/\(.\)/\1.*/g')"
+  COMPREPLY=($(compgen -W "$(ls -d ${HOMETMP}/*/ | xargs basename | sed 's/\.//g' | grep -i "$word")"))
+} && complete -F _t_complete t
 
 # Output a random string with the length of the first param, or 32 by default
 function rnd() {
@@ -168,7 +182,7 @@ function rnd() {
 
 # Extract ANY compressed file.
 # source: https://github.com/xvoland/Extract/blob/master/extract.sh
-function extract {
+function extract() {
   if [ -z "$1" ]; then
     # display usage if no parameters given
     echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
