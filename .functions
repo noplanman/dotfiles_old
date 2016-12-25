@@ -140,10 +140,7 @@ function vglobal-status() {
 
 # Create a new directory and enter it
 function mkd() {
-  if [ "$#" -eq 0 ]; then
-    echo "Usage: mkd directory [directory..]"
-    return 1
-  fi
+  if [ "$#" -eq 0 ]; then echo "Usage: mkd directory [directory..]"; return 1; fi
 
   mkdir -p "$@" && cd "$_" || exit;
 }
@@ -282,10 +279,7 @@ function fs() {
 
 # Create a data URL from a file
 function dataurl() {
-  if [ ! -f "${1}" ]; then
-    echo "Usage: dataurl file"
-    return 1
-  fi
+  if [ ! -f "${1}" ]; then echo "Usage: dataurl file"; return 1; fi
 
   local MIMETYPE
   MIMETYPE="$(file -b --mime-type "${1}")"
@@ -298,10 +292,7 @@ function dataurl() {
 
 # Create a git.io short URL
 function gitio() {
-  if [ -z "${1}" ] || [ -z "${2}" ]; then
-    echo "Usage: gitio slug url"
-    return 1
-  fi
+  if [ -z "${1}" ] || [ -z "${2}" ]; then echo "Usage: gitio slug url"; return 1; fi
 
   curl -i "https://git.io/" -F "code=${1}" -F "url=${2}"
 }
@@ -318,10 +309,7 @@ function phpserver() {
 
 # Run dig and display the most useful info
 function digga() {
-  if [ -z "${1}" ]; then
-    echo "Usage: digga domain"
-    return 1
-  fi
+  if [ -z "${1}" ]; then echo "Usage: digga domain"; return 1; fi
 
   dig +nocmd "${1}" any +multiline +noall +answer
 }
@@ -339,10 +327,7 @@ function o() {
 
 # Clone a simple chassis to the passed project folder.
 function load_chassis() {
-  if [ -z "${1}" ]; then
-    echo "Usage: load_chassis project_folder"
-    return 1
-  fi
+  if [ -z "${1}" ]; then echo "Usage: load_chassis project_folder"; return 1; fi
 
   local PROCEED=true
 
@@ -398,10 +383,13 @@ function img2disk() {
 
   if [ -z "${IMG}" ] || [ -z "${DSK}" ]; then
     echo "Usage: img2disk <path/image>.<img|zip|xz> <path/disk>"
+    return 1
   elif [ ! -f "${IMG}" ] ; then
     echo "${IMG} - file not found"
+    return 1
   elif [ ! -c "${DSK}" ] ; then
     echo "${DSK} - disk not found"
+    return 1
   else
     diskutil unmountDisk "${DSK}"
 
