@@ -418,3 +418,34 @@ function img2disk() {
 
   echo 'Done!'
 }
+
+# Image optimization tools
+# https://stackoverflow.com/a/19327447
+png() {
+  if [ -z "${1}" ]; then echo "Usage: png image"; return 1; fi
+  pngcrush -brute "$1"{,.} && command du -s "$1"{,.}
+}
+gif() {
+  if [ -z "${1}" ]; then echo "Usage: gif image"; return 1; fi
+  gifsicle -O "$1" -o "$1." && command du -s "$1"{,.}
+}
+jpeg() {
+  if [ -z "${1}" ]; then echo "Usage: jpeg image"; return 1; fi
+  jpegtran "$1" > "$1." && command du -s "$1"{,.}
+}
+# Just for easy access in history
+mpng() {
+  mv "$1"{.,}
+}
+mgif() {
+  newsize="$(wc -c <"$1.")"
+  oldsize="$(wc -c <"$1")"
+  if [ "${oldsize}" -gt "${newsize}" ] ; then
+    mv "$1"{.,}
+  else
+    rm "$1."
+  fi
+}
+mjpeg() {
+  mv "$1"{.,}
+}
