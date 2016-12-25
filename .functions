@@ -383,9 +383,9 @@ function daily_background() {
 
   if [[ ! -f "${DEST}" || ! -s "${DEST}" || "${1}" == "-f" ]]; then
     # Make sure we have a working internet connection.
-    /sbin/ping -q -c 1 "$(dig +short myip.opendns.com @resolver1.opendns.com)" >/dev/null || exit 1;
+    dig +short myip.opendns.com @resolver1.opendns.com &>/dev/null || return 1;
 
-    /usr/local/bin/wget -q "${PIC}" -O "${DEST}"
+    curl -Ls "${PIC}" -o "${DEST}" &>/dev/null
     sqlite3 "${HOME}/Library/Application Support/Dock/desktoppicture.db" "update data set value = '${DEST}'"
     killall Dock
   fi
