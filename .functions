@@ -94,7 +94,7 @@ function vglobal-status() {
     [ "${READING}" -eq 0 ] && continue
 
     # Get the id from this line and add it to the array.
-    local -r ID="$(echo "${LINE}" | awk '{print $1}')"
+    local ID="$(echo "${LINE}" | awk '{print $1}')"
     VAGRANT_MACHINE_IDS="${VAGRANT_MACHINE_IDS} ${ID}"
 
     # Output the current line.
