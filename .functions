@@ -154,7 +154,7 @@ function h() {
     return 0
   fi
 
-  local -r CMD="$(history | sed -n -E "s/^\ *${1}\ *(.*)$/\1/p")"
+  local -r CMD="$(history | LC_ALL=C sed -n -E "s/^\ *${1}\ *(.*)$/\1/p")"
 
   if [ -z "${CMD}" ]; then
     echo "Invalid entry: ${1}"

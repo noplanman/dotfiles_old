@@ -36,6 +36,7 @@ alias psg="\ps aux | grep -v grep | grep -i -e VSZ -e"
 for vaction in box connect destroy halt help init login package plugin port powershell provision push rdp reload resume share snapshot ssh ssh-config status suspend up version; do
   alias v${vaction}="vagrant ${vaction}"
 done
+alias vupp="vagrant up --provision"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
@@ -74,7 +75,7 @@ alias fgrep="fgrep --color=auto"
 alias egrep="egrep --color=auto"
 
 # IP addresses
-alias ipwan="dig +short myip.opendns.com @resolver1.opendns.com | echo No internet connection"
+alias ipwan="dig +short myip.opendns.com @resolver1.opendns.com || echo No internet connection"
 alias ip="ipconfig getifaddr $1"
 alias iplan="ipconfig getifaddr en0"
 alias ipwlan="ipconfig getifaddr en1"
