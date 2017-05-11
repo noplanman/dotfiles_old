@@ -13,7 +13,7 @@ _otp_complete() {
 # Switch the brew PHP version
 function phpswitch() {
   local -r PHPVERS="$(brew list | grep -E '^php\d{2}$')"
-    # Has a valid version been passed?
+  # Has a valid version been passed?
   if brew --prefix "php${1}" &>/dev/null; then
     printf "Unlinking..."
     brew unlink ${PHPVERS} &>/dev/null
@@ -373,7 +373,10 @@ function daily_background() {
     dig +short myip.opendns.com @resolver1.opendns.com &>/dev/null || return 1;
 
     curl -Ls "${PIC}" -o "${DEST}" &>/dev/null
-    sqlite3 "${HOME}/Library/Application Support/Dock/desktoppicture.db" "update data set value = '${DEST}'"
+    # For Mavericks
+    # sqlite3 "${HOME}/Library/Application Support/Dock/desktoppicture.db" "update data set value = '${DEST}'"
+    # For El Capitan
+    osascript -e "tell application 'Finder' to set desktop picture to POSIX file '${DEST}'"
     killall Dock
   fi
 }
@@ -424,15 +427,15 @@ function img2disk() {
 # Image optimization tools
 # https://stackoverflow.com/a/19327447
 png() {
-  if [ -z "${1}" ]; then echo "Usage: png image"; return 1; fi
+  if [ -z "${1}" ]; then echo "Usage: png <image>"; return 1; fi
   pngcrush -brute "$1"{,.} && command du -s "$1"{,.}
 }
 gif() {
-  if [ -z "${1}" ]; then echo "Usage: gif image"; return 1; fi
+  if [ -z "${1}" ]; then echo "Usage: gif <image>"; return 1; fi
   gifsicle -O "$1" -o "$1." && command du -s "$1"{,.}
 }
 jpeg() {
-  if [ -z "${1}" ]; then echo "Usage: jpeg image"; return 1; fi
+  if [ -z "${1}" ]; then echo "Usage: jpeg <image>"; return 1; fi
   jpegtran "$1" > "$1." && command du -s "$1"{,.}
 }
 # Just for easy access in history

@@ -1,5 +1,9 @@
 export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.composer/vendor/bin:$PATH" # Global composer
 export PATH="$HOME/.rvm/bin:$PATH" # Add RVM to PATH for scripting.
 export PATH="$PROJECTS/_PrettyCode/PHP_CodeSniffer/scripts:$PATH" # PHP CodeSniffers.
+
+# brew
+export PATH="/usr/local/opt/curl/bin:$PATH"
 export PATH="/usr/local/bin:/usr/local/sbin:$PATH" # Add location for local binaries.
 export PATH="/usr/local/opt/openssl/bin:$PATH" # Add location for brew openssl
