@@ -376,7 +376,11 @@ function daily_background() {
     # For Mavericks
     # sqlite3 "${HOME}/Library/Application Support/Dock/desktoppicture.db" "update data set value = '${DEST}'"
     # For El Capitan
-    osascript -e "tell application 'Finder' to set desktop picture to POSIX file '${DEST}'"
+    osascript -e 'set theUnixPath to POSIX file "'${DEST}'" as text
+                 tell application "Finder"
+                 set desktop picture to {{theUnixPath}} as alias
+                 end tell'
+
     killall Dock
   fi
 }
