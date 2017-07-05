@@ -104,7 +104,16 @@ function vglobal-status() {
     VAGRANT_MACHINE_IDS="${VAGRANT_MACHINE_IDS} ${ID}"
 
     # Output the current line.
-    [[ -z "${STATUS}" || "${LINE}" = *" ${STATUS} "* ]] && echo "${LINE}"
+    if [[ -z "${STATUS}" || "${LINE}" = *" ${STATUS} "* ]]; then
+      case "$(echo "${LINE}" | awk '{print $4}')" in
+        aborted)   printf '%s' '🆎  ';;
+        poweroff)  printf '%s' '🅾️  ';;
+        running)   printf '%s' '✳️  ';;
+        suspended) printf '%s' '✴️  ';;
+      esac
+
+      echo "${LINE}"
+    fi
 
   done < <(vagrant global-status)
 
