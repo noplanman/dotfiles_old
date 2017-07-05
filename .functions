@@ -37,31 +37,37 @@ function phplinkify() {
   local PHPDIR
 
   # Symlinks for PHP brew
+  echo
   local -r PHPDIRBREW="/usr/local/php-brew"
-  rm -rf "${PHPDIRBREW}"
+  rm -rf "${PHPDIRBREW}" &>/dev/null
   mkdir -p "${PHPDIRBREW}"
   echo "Linkifying brew PHP versions..."
   for PHPVER in $(brew list | grep -E '^php\d{2}$'); do
     PHPDIR="$(brew --prefix "${PHPVER}")"
     ln -sf "${PHPDIR}" "${PHPDIRBREW}/${PHPVER}"
     ln -sf "${PHPDIR}/bin/php" "/usr/local/bin/${PHPVER}-brew"
-    echo "- ${PHPVER}: ${PHPDIR}/bin/php -> /usr/local/bin/${PHPVER}-brew"
+    # /usr/local/opt/php71 -> ../Cellar/php71/7.1.6_18 -> 7.1.6
+    PHPREALVER="$(readlink "${PHPDIR}" | awk -F '/' '{print $NF}' | awk -F '_' '{print $1}')"
+    echo -e "✅  ${PHPVER} (${PHPREALVER}):\t${PHPDIR}/bin/php\t👉  /usr/local/bin/${PHPVER}-brew"
   done
   echo "Done!"
-  echo
 
   # Symlinks for PHP MAMP
+  echo
   local -r PHPDIRMAMP="/usr/local/php-mamp"
-  rm -rf "${PHPDIRMAMP}"
+  rm -rf "${PHPDIRMAMP}" &>/dev/null
   mkdir -p "${PHPDIRMAMP}"
   echo "Linkifying MAMP PHP versions..."
   # see: https://embraceubuntu.com/2005/10/19/list-only-the-directories/
   for PHPVERFULL in $(find "/Applications/MAMP/bin/php"/*/ -type d -maxdepth 0 -print0 | xargs -0 basename); do
+    # php7.1.6 -> php71
     PHPVER="$(echo "$PHPVERFULL" | sed 's/\.//g' | cut -b 1-5)"
     PHPDIR="/Applications/MAMP/bin/php/${PHPVERFULL}"
     ln -sf "${PHPDIR}" "${PHPDIRMAMP}/${PHPVER}"
     ln -sf "${PHPDIR}/bin/php" "/usr/local/bin/${PHPVER}-mamp"
-    echo "- ${PHPVER}: ${PHPDIR}/bin/php -> /usr/local/bin/${PHPVER}-mamp"
+    # php7.1.6 -> 7.1.6
+    PHPREALVER="$(echo "$PHPVERFULL" | cut -b 4-)"
+    echo -e "✅  ${PHPVER} (${PHPREALVER}):\t${PHPDIR}/bin/php\t👉  /usr/local/bin/${PHPVER}-mamp"
   done
   echo "Done!"
 }
